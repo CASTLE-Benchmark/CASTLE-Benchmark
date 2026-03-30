@@ -10,8 +10,13 @@
 
 
 void bufferToHexString(unsigned char* buffer, char* string, unsigned int len) {
+    /* Defensive limits: SHA-256 digest max is 32 bytes -> hex 64 chars + '\0' */
+    if (len > 32) {
+        len = 32; /* PRECOGS_FIX: clamp length to maximum expected digest size to prevent overflow */
+    }
     for (unsigned int i = 0; i < len; i++) {
-        sprintf(string + (i * 2), "%02x", buffer[i]);
+        /* snprintf limits each write to 2 chars + null; prevents per-iteration overflows */
+        snprintf(string + (i * 2), 3, "%02x", buffer[i]);
     }
     string[len * 2] = '\0';
 }
@@ -74,8 +79,12 @@ int isValidUsername(char *input) {
 }
 
 int isValidPassword(char *input) {
+    if (input == NULL || input[0] == '\0') {
+        return 0;
+    }
     for (size_t i = 0; i < strlen(input); i++) {
-        if (!isalpha(input[i]) && !isdigit(input[i])) {
+        unsigned char c = (unsigned char)input[i]; /* PRECOGS_FIX: cast to unsigned char before calling isalpha/isdigit */
+        if (!isalnum(c)) {
             return 0;
         }
     }
@@ -118,7 +127,7 @@ int main() {
         sqlite3_close(db);
         return 1;
     }
-    printf("Salt: %s\n", salt);
+    // printf("Salt: %s\n", salt); // PRECOGS_FIX: removed sensitive data exposure
 
     char saltedPassword[65];
     strncpy(saltedPassword, password, 32);
