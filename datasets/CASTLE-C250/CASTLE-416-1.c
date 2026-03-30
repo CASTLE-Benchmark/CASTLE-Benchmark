@@ -2,9 +2,12 @@
 #include <stdlib.h>
 
 void square(int* a) {
+    if (a == NULL) {
+        return; // PRECOGS_FIX: check for NULL to avoid dereference of a null pointer
+    }
     int b = *a;
     *a = b * b;
-    free(a);
+    // PRECOGS_FIX: removed free(a); preserve ownership with the caller to avoid use-after-free
 }
 
 int main() {
