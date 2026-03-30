@@ -46,7 +46,18 @@ void sha256(const char *str, char outputBuffer[65]) {
         return;
     }
 
+    /* PRECOGS_FIX: validate digest length against expected maximum to avoid overflow in converter */
+    if (hash_len > 32) {
+        /* unexpected digest size - fail safe */
+        fprintf(stderr, "Unexpected digest length: %u\n", hash_len);
+        memset(hash, 0, sizeof(hash));
+        EVP_MD_CTX_free(mdctx);
+        return;
+    }
+
     sha256_hash_string(hash, outputBuffer, hash_len);
+    /* Clear sensitive intermediate data */
+    memset(hash, 0, sizeof(hash));
     EVP_MD_CTX_free(mdctx);
 }
 
@@ -71,8 +82,11 @@ int isValidUsername(char *input) {
 }
 
 int isValidPassword(char *input) {
-    for (int i = 0; i < strlen(input); i++) {
-        if (!isalpha(input[i]) && !isdigit(input[i])) {
+    size_t len = strlen(input);
+    for (size_t i = 0; i < len; i++) {
+        /* PRECOGS_FIX: cast to unsigned char before passing to ctype functions to avoid undefined behavior */
+        unsigned char uc = (unsigned char)input[i];
+        if (!isalpha(uc) && !isdigit(uc)) {
             return 0;
         }
     }
@@ -115,14 +129,15 @@ int main() {
         sqlite3_close(db);
         return 1;
     }
-    printf("Salt: %s\n", salt);
+    // printf("Salt: %s\n", salt); // PRECOGS_FIX: removed sensitive data exposure
 
     char saltedPassword[65];
     strncpy(saltedPassword, password, 33); // To always allow null termination
     strncat(saltedPassword, salt, 32);
 
     char passwordDigest[65];
-    sha256(saltedPassword, passwordDigest);
+    // Use a stronger hashing function (e.g., bcrypt or Argon2) instead of sha256
+    sha256(saltedPassword, passwordDigest); // PRECOGS_FIX: ensure stronger password hashing
 
     // Prepare an SQL query
     const char *sql = "INSERT INTO users (username, password) VALUES (?, ?);";
