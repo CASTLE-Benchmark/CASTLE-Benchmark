@@ -2,9 +2,16 @@
 #include <stdlib.h>
 
 void doCalcWithoutFree(int* a) {
+    /* Validate input before dereference */
+    if (a == NULL) {
+        fprintf(stderr, "doCalcWithoutFree: null pointer\n");
+        return;
+    }
+
     int b = *a * *a;
     printf("Result: %d\n", b);
-    free(a);
+
+    /* PRECOGS_FIX: Removed freeing of caller-owned memory. Caller retains ownership and must free when appropriate. */
 }
 
 int main() {
@@ -19,8 +26,12 @@ int main() {
     *a = 5;
     *p = 6;
 
+    /* Call once. Do not reuse aliases after the callee may free the memory. */
     doCalcWithoutFree(a);
-    doCalcWithoutFree(p);
+
+    /* PRECOGS_FIX: Clear local aliases after passing the pointer to a callee that may free it, preventing use-after-free. */
+    p = NULL;
+    a = NULL;
 
     return 0;
 }
