@@ -1,11 +1,11 @@
 #include <stdio.h>
 
 int sumArray(int* arr, int size, int index) {
-    if (index == size) {
+    if (index >= size) { // PRECOGS_FIX: check for out-of-bounds access
         return 0;
     }
 
-    return arr[index] + sumArray(arr, size, index+1);
+    return arr[index] + sumArray(arr, size, index+1); // PRECOGS_FIX: ensure index does not exceed size
 }
 
 int main() {
