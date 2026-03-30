@@ -34,9 +34,21 @@ ConfigEntry* createConfigEntry(char* name, unsigned int nameSize, char* value, u
 }
 
 ConfigEntry* loadConfig(char* path) {
+    /* PRECOGS_FIX: include stat to check file permissions before reading plaintext credentials */
+    #include <sys/stat.h>
+
     FILE* file = fopen(path, "r");
     if (file == NULL) {
         return NULL;
+    }
+
+    struct stat st;
+    if (stat(path, &st) == 0) {
+        /* PRECOGS_FIX: refuse to load config files that are group/other-readable to avoid cleartext credential exposure */
+        if (st.st_mode & (S_IRGRP | S_IROTH)) {
+            fclose(file);
+            return NULL;
+        }
     }
 
     ConfigEntry* entries = NULL;
@@ -46,24 +58,32 @@ ConfigEntry* loadConfig(char* path) {
     while (fgets(line, sizeof(line), file)) {
         char* firstEquals = strchr(line, '=');
         if (firstEquals == NULL) {
-            continue;
+            continue; /* skip malformed lines */
         }
 
         char* value = firstEquals + 1;
-        unsigned int nameSize = firstEquals - line;
-        unsigned int valueSize = strlen(value);
-        if (valueSize > 0) {
-            valueSize -= 1;
+        unsigned int nameSize = (unsigned int)(firstEquals - line);
+        unsigned int valueSize = (unsigned int)strlen(value);
+        if (valueSize > 0 && value[valueSize - 1] == '\n') {
+            valueSize -= 1; /* strip trailing newline */
         }
+
+        /* Skip entries with empty name or value instead of aborting */
         if (nameSize == 0 || valueSize == 0) {
-            fclose(file);
-            return entries;
+            continue;
         }
-        
+
+        /* Enforce a sane maximum to avoid excessive allocations */
+        if (nameSize > 1024 || valueSize > 1024) {
+            continue;
+        }
+
         ConfigEntry* entry = createConfigEntry(line, nameSize, value, valueSize);
         if (entry == NULL) {
+            /* allocation failed: cleanup and abort load to avoid inconsistent state */
             fclose(file);
-            return entries;
+            freeConfig(entries);
+            return NULL;
         }
 
         if (entries == NULL) {
@@ -103,7 +123,13 @@ char* findEntryValue(ConfigEntry* entries, char* name) {
 
 void getString(char* buffer, unsigned int size, char* prompt) {
     printf("%s", prompt);
-    fgets(buffer, size, stdin);
+    if (buffer == NULL || size == 0) return;
+    if (fgets(buffer, size, stdin) == NULL) {
+        /* PRECOGS_FIX: ensure buffer is initialized if fgets fails to avoid use of uninitialized memory */
+        buffer[0] = '\0';
+        clearerr(stdin);
+        return;
+    }
     buffer[strcspn(buffer, "\n")] = '\0';
 }
 
