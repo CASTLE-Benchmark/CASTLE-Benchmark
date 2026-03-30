@@ -7,6 +7,10 @@ int square(int* a) {
 }
 
 void swap(int** a, int** b) {
+    if (a == NULL || b == NULL) {
+        fprintf(stderr, "swap: null pointer-to-pointer argument\n");
+        return; // PRECOGS_FIX: validate pointer-to-pointer arguments to avoid dereferencing NULL
+    }
     int* temp = *a;
     *a = *b;
     *b = temp;
@@ -18,11 +22,13 @@ void safeFree(int** a) {
 }
 
 int main() {
-    int *a = (int*)malloc(sizeof(int));
-    int *b = (int*)malloc(sizeof(int));
+    int *a = malloc(sizeof(int));
+    int *b = malloc(sizeof(int));
     if (a == NULL || b == NULL) {
-        printf("Failed to allocate memory.\n");
-        return 1; // Indicate error and exit
+        fprintf(stderr, "Failed to allocate memory.\n");
+        if (a != NULL) { free(a); a = NULL; } // PRECOGS_FIX: free any partially allocated resource 'a'
+        if (b != NULL) { free(b); b = NULL; } // PRECOGS_FIX: free any partially allocated resource 'b'
+        return 1;
     }
 
     *a = 5;
@@ -31,8 +37,9 @@ int main() {
     *b = -7;
     printf("Result: %d\n", square(b));
 
+    /* Properly free both allocated objects. Avoid swapping freed pointers which can lead
+       to difficult-to-follow ownership and potential leaks. */
     safeFree(&a);
-    swap(&a, &b);
     safeFree(&b);
 
     return 0;
