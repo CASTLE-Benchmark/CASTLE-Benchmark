@@ -20,6 +20,9 @@ void dosth() {
     free(A); // PRECOGS_FIX: free allocated memory to prevent memory leak
     A = NULL; // PRECOGS_FIX: avoid dangling pointer after free
 }
+    free(A); // PRECOGS_FIX: free allocated memory to prevent memory leak
+    A = NULL; // PRECOGS_FIX: avoid dangling pointer after free
+}
 
 int main() {
     dosth();
