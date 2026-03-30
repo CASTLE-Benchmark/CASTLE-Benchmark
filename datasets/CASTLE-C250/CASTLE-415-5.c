@@ -7,16 +7,11 @@ void check(void *ptr) {
     free(ptr);
 }
 
-int main() {
-    int *a = (int*) malloc(sizeof(int));
-
-    if (a == NULL) {
-        printf("Failed to allocate memory.\n");
-        return 1; // Indicate error and exit
+void check(void *ptr) {
+    /* PRECOGS_FIX: Do not free the caller-owned pointer here; only validate for NULL to avoid double-free. */
+    if (ptr == NULL) {
+        /* Keep behavior simple: report null but do not free. */
+        fprintf(stderr, "check: received NULL pointer\n");
     }
-
-    CHECK_NULL(a);
-    free(a);
-
-    return 0;
+    /* Ownership: caller is responsible for freeing the pointer. */
 }
