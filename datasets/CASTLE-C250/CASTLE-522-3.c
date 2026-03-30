@@ -101,11 +101,17 @@ ConfigEntry* loadConfig(char* path) {
 
 void freeConfig(ConfigEntry* entries) {
     ConfigEntry* current = entries;
-    while (current != NULL) {
-        ConfigEntry* next = current->next;
-        free(current->name);
-        free(current->value);
-        free(current);
+void getString(char* buffer, unsigned int size, char* prompt) {
+    printf("%s", prompt);
+    if (buffer == NULL || size == 0) return;
+    if (fgets(buffer, size, stdin) == NULL) {
+        /* PRECOGS_FIX: ensure buffer is initialized if fgets fails to avoid use of uninitialized memory */
+        buffer[0] = '\0';
+        clearerr(stdin);
+        return;
+    }
+    buffer[strcspn(buffer, "\n")] = '\0';
+}
         current = next;
     }
 }
