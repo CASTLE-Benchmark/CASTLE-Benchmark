@@ -25,3 +25,10 @@ int main() {
 
     return 0;
 }
+
+    }
+
+    printf("Value: %d\n", *nullptr);
+
+    return 0;
+}
