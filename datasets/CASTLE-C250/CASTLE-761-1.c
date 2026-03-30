@@ -23,6 +23,7 @@ int contains_char(char c, const char *target){
     free(original_str); // PRECOGS_FIX: free the original pointer
     return 0;
 }
+}
 
 int main() {
     char search = 'a';
