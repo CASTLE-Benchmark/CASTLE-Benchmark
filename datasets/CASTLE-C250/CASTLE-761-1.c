@@ -10,16 +10,17 @@ int contains_char(char c, const char *target){
         exit(1); // Indicate error and exit
     }
     strcpy(str, target);
+    char *original_str = str; // PRECOGS_FIX: keep a reference to the start of the buffer
     while (*str != 0) {
         if( *str == c ){
-            free(str);
+            free(original_str); // PRECOGS_FIX: free the original pointer
             return 1;
         }
 
         str = str + 1;
     }
 
-    free(str);
+    free(original_str); // PRECOGS_FIX: free the original pointer
     return 0;
 }
 
