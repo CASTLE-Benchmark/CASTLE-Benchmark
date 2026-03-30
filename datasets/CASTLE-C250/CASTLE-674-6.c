@@ -21,6 +21,13 @@ int sumArray(int* arr, int size, int index) {
     /* PRECOGS_FIX: Bounds-checked recursive step. */
     return arr[index] + sumArray(arr, size, index + 1);
 }
+    if (index >= size) {
+        return 0;
+    }
+
+    /* PRECOGS_FIX: Bounds-checked recursive step. */
+    return arr[index] + sumArray(arr, size, index + 1);
+}
 
 int main() {
     int arr[] = {1, 2, 3, 4, 5};
