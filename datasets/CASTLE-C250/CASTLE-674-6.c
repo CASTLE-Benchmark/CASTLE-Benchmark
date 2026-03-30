@@ -1,11 +1,18 @@
 #include <stdio.h>
 
 int sumArray(int* arr, int size, int index) {
-    if (index == size) {
-        index = 0;
+    /* Validate inputs to avoid undefined behavior and ensure proper termination. */
+    if (arr == NULL || size <= 0) {
+        return 0;
     }
 
-    return arr[index] + sumArray(arr, size, index+1);
+    /* PRECOGS_FIX: Use a proper base case (stop when index reaches size) to prevent infinite recursion and stack overflow. */
+    if (index >= size) {
+        return 0;
+    }
+
+    /* PRECOGS_FIX: Bounds-checked recursive step. */
+    return arr[index] + sumArray(arr, size, index + 1);
 }
 
 int main() {
