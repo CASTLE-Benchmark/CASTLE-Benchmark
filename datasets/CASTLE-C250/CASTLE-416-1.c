@@ -9,6 +9,9 @@ void square(int* a) {
     *a = b * b;
     // PRECOGS_FIX: removed free(a); preserve ownership with the caller to avoid use-after-free
 }
+    *a = b * b;
+    // PRECOGS_FIX: removed free(a); preserve ownership with the caller to avoid use-after-free
+}
 
 int main() {
     int *a = (int*) malloc(sizeof(int));
