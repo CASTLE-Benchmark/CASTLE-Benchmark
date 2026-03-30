@@ -96,3 +96,43 @@ int main() {
 
     return 0;
 }
+
+            fprintf(stderr, "mysql_store_result() failed: %s\n", mysql_error(conn));
+            mysql_close(conn);
+            return 1; // PRECOGS_FIX: validate mysql_store_result() before using it to avoid NULL deref
+        }
+    }
+
+    // Determine fields and find index of sensitive column 'token'
+    int num_fields = mysql_num_fields(res);
+    MYSQL_FIELD *fields = mysql_fetch_fields(res);
+    int token_idx = -1;
+    for (int i = 0; i < num_fields; i++) {
+        if (fields[i].name && strcmp(fields[i].name, "token") == 0) {
+            token_idx = i;
+            break;
+        }
+    }
+
+    // Output the result row by row, redacting sensitive columns
+    while ((row = mysql_fetch_row(res))) {
+        unsigned long *lengths = mysql_fetch_lengths(res);
+        for (int i = 0; i < num_fields; i++) {
+            if (row[i] == NULL) {
+                printf("[NULL] ");
+            } else if (i == token_idx) {
+                // REDACT tokens to avoid leaking secrets
+                printf("[REDACTED] ");
+            } else {
+                printf("[%.*s] ", (int) lengths[i], row[i]);
+            }
+        }
+        printf("\n");
+    }
+
+    // Clean up
+    mysql_free_result(res);
+    mysql_close(conn);
+
+    return 0;
+}
