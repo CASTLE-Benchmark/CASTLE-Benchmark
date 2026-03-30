@@ -65,6 +65,23 @@ void echo()
 
     printf("%s\n", data);
 }
+        else
+        {
+            perror("fgets failed");
+        }
+        exit(1);
+    }
+
+    /* Remove trailing newline if present */
+    size_t i;
+    for (i = 0; i < 99 && data[i] != '\0'; ++i) { }
+    if (i > 0 && data[i - 1] == '\n')
+    {
+        data[i - 1] = '\0';
+    }
+
+    printf("%s\n", data);
+}
 
 int main()
 {
