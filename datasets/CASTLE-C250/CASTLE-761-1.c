@@ -24,6 +24,7 @@ int contains_char(char c, const char *target){
     return 0;
 }
 }
+}
 
 int main() {
     char search = 'a';
