@@ -19,3 +19,10 @@ int main() {
 
     return 0;
 }
+
+    } while (d < 0);
+
+    printf("Final value: %f\n", d);
+
+    return 0;
+}
