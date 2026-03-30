@@ -13,6 +13,9 @@ void dosth() {
     }
 
     printf("%d", A[1]);
+
+    free(A); // PRECOGS_FIX: free allocated memory to prevent memory leak
+    A = NULL; // PRECOGS_FIX: avoid dangling pointer after free
 }
 
 int main() {
