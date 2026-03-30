@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
-#define GET_ADDRESS(p) (ulli)(p++)
+#define GET_ADDRESS(p) ((ulli)(uintptr_t)(p)) // PRECOGS_FIX: removed post-increment side-effect and use uintptr_t for safe pointer-to-integer conversion
 
 typedef unsigned long long int ulli;
 
