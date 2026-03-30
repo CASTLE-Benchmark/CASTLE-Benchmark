@@ -14,38 +14,45 @@ int hex_to_int(char c) {
 }
 
 void url_decode(const char *src, char *dest) {
-    while (*src) {
+    size_t out = 0;
+    const size_t MAX_DEST = 1024; // PRECOGS_FIX: enforce an explicit maximum destination size to prevent overrun
+
+    while (*src && out < MAX_DEST - 1) {
         if (*src == '%') {
-            if (isxdigit(*(src + 1)) && isxdigit(*(src + 2))) {
-                // Decode the next two characters as a hex value
-                int high = hex_to_int(*(src + 1));
-                int low = hex_to_int(*(src + 2));
-                *dest = (char)(high * 16 + low);
+            /* Ensure we have two more characters before indexing, and use unsigned char for isxdigit */
+            if (src[1] != '\0' && src[2] != '\0' && isxdigit((unsigned char)src[1]) && isxdigit((unsigned char)src[2])) {
+                int high = hex_to_int(src[1]);
+                int low = hex_to_int(src[2]);
+                if (high >= 0 && low >= 0) {
+                    dest[out++] = (char)(high * 16 + low);
+                } else {
+                    /* Fallback: copy '%' if decoding failed */
+                    dest[out++] = *src;
+                }
                 src += 3;
             } else {
-                // Invalid encoding, copy the % as-is
-                *dest = *src;
+                /* Invalid encoding or truncated percent-encoding: copy '%' as-is */
+                dest[out++] = *src;
                 src++;
             }
         } else if (*src == '+') {
-            // Replace '+' with space
-            *dest = ' ';
+            dest[out++] = ' ';
             src++;
         } else {
-            // Copy other characters as-is
-            *dest = *src;
+            dest[out++] = *src;
             src++;
         }
-        dest++;
     }
-    *dest = '\0';
+    dest[out] = '\0';
 }
 
 int main() {
-    char* url = "http://localhost:8080/?search=%3C%3Cscript%3Escript%20%3Ealert(1)%3C/script%20%3C/script%3E%3E";
+    /* PRECOGS_FIX: make the URL a writable array rather than a pointer to a string literal */
+    char url[] = "http://localhost:8080/?search=%3C%3Cscript%3Escript%20%3Ealert(1)%3C/script%20%3C/script%3E%3E"; 
     char decodedUrl[1024] = {0};
 
-    url_decode(decodedUrl, url);
+    /* PRECOGS_FIX: pass arguments in correct order: src (url), dest (decodedUrl) */
+    url_decode(url, decodedUrl);
 
     printf("Decoded URL: %s\n", decodedUrl);
     return 0;
