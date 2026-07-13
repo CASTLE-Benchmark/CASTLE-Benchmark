@@ -9,21 +9,29 @@ The __CASTLE Benchmark__ is a comprehensive dataset and a scoring method for eva
 This dataset was created by Richard A. Dubniczky, Krisztofer Zoltan Horvát, Tamás Bisztray,
 Mohamed Amine Ferrag, Lucas C. Cordeiro, and Norbert Tihanyi as a joint research project and it is currently under peer-review.
 
-Paper preprint is available at: [arxiv.org](https://arxiv.org/abs/2503.09433)
+Paper preprint is available at: [arxiv.org](https://arxiv.org/abs/2503.09433), full paper available at: [acm.org](https://dl.acm.org/doi/10.1007/978-3-031-98208-8_15)
 
 ## Citing the Paper
 
 ```bibtex
-@misc{dubniczky2025castle,
-    title={CASTLE: Benchmarking Dataset for Static Code Analyzers and LLMs towards CWE Detection}, 
-    author={Richard A. Dubniczky and Krisztofer Zoltán Horvát and Tamás Bisztray and Mohamed Amine Ferrag and Lucas C. Cordeiro and Norbert Tihanyi},
-    year={2025},
-    eprint={2503.09433},
-    archivePrefix={arXiv},
-    primaryClass={cs.CR},
-    url={https://arxiv.org/abs/2503.09433}, 
+@inproceedings{castle2025dubniczky,
+author = {Dubniczky, Richard A. and Horv\'{a}t, Krisztofer Zoltan and Bisztray, Tam\'{a}s and Ferrag, Mohamed Amine and Cordeiro, Lucas C. and Tihanyi, Norbert},
+title = {CASTLE: Benchmarking Dataset for Static Code Analyzers and LLMs Towards CWE Detection},
+year = {2025},
+isbn = {978-3-031-98207-1},
+publisher = {Springer-Verlag},
+address = {Berlin, Heidelberg},
+url = {https://doi.org/10.1007/978-3-031-98208-8_15},
+doi = {10.1007/978-3-031-98208-8_15},
+booktitle = {Theoretical Aspects of Software Engineering: 19th International Symposium, TASE 2025, Limassol, Cyprus, July 14–16, 2025, Proceedings},
+pages = {253–272},
+numpages = {20},
+keywords = {Security, Static Code Analysis, Security Analysis, Generative AI, Large Language Models},
+location = {Limassol, Cyprus}
 }
 ```
+
+Richard A. Dubniczky, Krisztofer Zoltan Horvát, Tamás Bisztray, Mohamed Amine Ferrag, Lucas C. Cordeiro, and Norbert Tihanyi. 2025. CASTLE: Benchmarking Dataset for Static Code Analyzers and LLMs Towards CWE Detection. In Theoretical Aspects of Software Engineering: 19th International Symposium, TASE 2025, Limassol, Cyprus, July 14–16, 2025, Proceedings. Springer-Verlag, Berlin, Heidelberg, 253–272. https://doi.org/10.1007/978-3-031-98208-8_15
 
 ## The Complete Dataset
 
